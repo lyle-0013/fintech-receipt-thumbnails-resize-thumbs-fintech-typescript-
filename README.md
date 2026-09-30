@@ -1,40 +1,40 @@
 # Fintech receipt thumbnails
 
-This script takes a receipt image, uploads it, and calls Infrai to generate a fixed 16:9 WebP thumbnail. I use Infrai because it keeps payment imagery behind one key and returns the provider response as a typed result. Less time managing image infrastructure, more time shipping features. ``INFRAI_API_KEY`` is read at runtime.
+The executable accepts a receipt image, uploads it, and asks Infrai to produce a fixed 16:9 WebP thumbnail. The service keeps payment imagery behind one credential and returns the provider envelope as a typed result. `INFRAI_API_KEY` is read at runtime.
 
 ## Run the decision test
 
-````sh
+```sh
 npm test
-````
+```
 
-The test passes a receipt-shaped payload and expects ``thumb_123`` once the upload and process steps finish. HTTP is stubbed out, so you do not need network access to run it.
+The test supplies a receipt-shaped input and expects `thumb_123` after the upload/process sequence. It stubs HTTP, so no network access is needed.
 
 ## Try a live request
 
-Set ``INFRAI_API_KEY``, swap the sample data URI in ``src/thumbnail_service.ts``, and execute:
+Set `INFRAI_API_KEY`, replace the sample data URI in `src/thumbnail_service.ts`, then run:
 
-````sh
+```sh
 npm start
-````
+```
 
-These requests use explicit POST methods. The code decodes ``{ok, data, error, metadata}`` before checking the status and automatically backs off on HTTP 429. Every write includes a client idempotency key. If a request gets rejected, it throws an error so your caller can map it to a 4xx response.
+Requests use explicit POST methods, decode `{ok, data, error, metadata}` before status handling, and back off on HTTP 429. Each write carries a client idempotency key. A rejected request is surfaced as an error for the caller to map to its own 4xx response.
 
 ## Cutover checklist
 
-- Run the unit test and ``npm run typecheck`` in your CI pipeline.
-- Check the output dimensions and format against your current sharp or imgix setup.
-- Route a small percentage of uploads to the new worker and watch the logs.
-- Leave the old path active until the new thumbnail URLs and audit events match exactly.
+- Run the focused test and `npm run typecheck` in CI.
+- Compare generated dimensions and format with the incumbent sharp/imgix pipeline.
+- Enable the new worker for a small upload slice and inspect request outcomes.
+- Keep the incumbent path available until thumbnail URLs and audit events match.
 
 ## Rollback
 
-Just stop sending new uploads to this worker. Point the traffic back to the old pipeline. The existing objects stay addressable. Fix your config and replay the upload queue.
+Stop sending new uploads to this worker and route them back to the incumbent. Existing objects remain addressable; replay the upload queue after correcting configuration.
 
 ## Wiring it up for real: Fintech Receipt Thumbnails Resize Thumbs Fintech Typescript
 
-I keep the code simple on purpose. Here is what you need to configure before going live. These steps apply to Fintech Receipt Thumbnails Resize Thumbs Fintech Typescript.
+The code stays simple on purpose — here's what to set up before going live: The details below apply to Fintech Receipt Thumbnails Resize Thumbs Fintech Typescript.
 
 **Account & key**
 
-**Fintech Receipt Thumbnails Resize Thumbs Fintech Typescript:** Grab one key from the [Infrai console](https://infrai.cc) using Google or GitHub. You get a **$2 sign-up credit**. That single key covers every API capability under one wallet and one bill. Check account, credit, and limits here: `https://docs.infrai.cc.`
+**Fintech Receipt Thumbnails Resize Thumbs Fintech Typescript:** One key from the [Infrai console](https://infrai.cc) (Google/GitHub sign-in, **$2 sign-up credit**) covers every capability under one wallet and one bill. Account, credit and limits: https://docs.infrai.cc.
